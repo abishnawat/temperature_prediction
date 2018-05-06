@@ -1,0 +1,52 @@
+
+R version 3.4.1 (2017-06-30) -- "Single Candle"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> weather<- read.csv("C:/Users/DELL/Desktop/minor project/datasets/data3.csv")
+> smp_size <- floor(0.66*nrow(weather))
+> set.seed(500)
+> index <- sample(seq_len(nrow(weather)), size=smp_size)
+> wtrain <- weather[index, ]
+> wtest <- weather[-index, ]
+> normalize<-function(x){return((x-min(x))/(max(x)-min(x)))}
+> weather_norm<-as.data.frame(lapply(weather, normalize))
+> wtrain<-weather_norm[index, ]
+> wtest <- weather_norm[-index, ]
+> library(neuralnet)
+> m<-neuralnet(result~y1+y2+y3+y4+y5+y6+y7+y8+y9+y10, data=wtrain, hidden=c(2,2), linear.output=T, stepmax=2e6)
+> pnn<-compute(m,wtest[,1:10])
+> pr<-pnn$net.result
+> wtest.x<-((wtest$result)*(max(weather$result)-min(weather$result)))+min(weather$result)
+> pr.x<-(pr*(max(weather$result)-min(weather$result)))+min(weather$result)
+> cor(wtest.x, pr.x)
+             [,1]
+[1,] 0.6232695834
+> library(Metrics)
+> mse(wtest.x, pr.x)
+[1] 3.465796541
+> mae(wtest.x, pr.x)
+[1] 1.451062379
+> plot(m)
+> plot(m)
+> save.image("C:\\Users\\DELL\\Desktop\\minor project\\implementaions\\bpnn\\data3_h2-2_r1.RData")
+Warning messages:
+1: unable to open printer 
+2: opening device failed 
+> 

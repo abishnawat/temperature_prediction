@@ -1,0 +1,53 @@
+
+R version 3.4.1 (2017-06-30) -- "Single Candle"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> weather<- read.csv("C:/Users/DELL/Desktop/minor project/weather_data_10yrs.csv")
+> smp_size <- floor(0.60*nrow(weather))
+> set.seed(500)
+> index <- sample(seq_len(nrow(weather)), size=smp_size)
+> wtrain <- weather[index, ]
+> wtest <- weather[-index, ]
+> library(rpart)
+> m<-rpart(X2016 ~X2015+X2014+X2013+X2012+X2011+X2010+X2009+X2008+X2007, data=wtrain)
+> plm <- predict(m, wtest)
+> library(Metrics)
+> mse(wtest$X2016, plm)
+[1] 96.18995
+> cor(wtest$X2016, plm)
+[1] 0.7966602
+> mae(plm, wtest$X2016)
+[1] 7.577534
+> plot(wtest$X2016,plm,col='red',main='Real vs predicted values',pch=18,cex=0.7)
+> abline(0,1,lwd=2)
+> legend('bottomright',legend='LR',pch=18,col='red', bty='n')
+> library(rpart.plot)
+Warning message:
+package ‘rpart.plot’ was built under R version 3.4.2 
+> rpart.plot(m, digits = 3)
+> rpart.plot(m, digits = 5)
+> plot(wtest$X2016,plm,col='red',main='Real vs predicted values',pch=18,cex=0.7)
+> abline(0,1,lwd=2)
+> legend('bottomright',legend='RT',pch=18,col='red', bty='n')
+> rpart.plot(m, digits = 5)
+> rpart.plot(m, digits = 10)
+> rpart.plot(m, digits = 3)
+> save.image("C:\\Users\\DELL\\Desktop\\minor project\\implementaions\\rtree\\rpart_1.RData")
+> 

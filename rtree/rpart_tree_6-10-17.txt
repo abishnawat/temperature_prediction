@@ -1,0 +1,64 @@
+
+R version 3.4.1 (2017-06-30) -- "Single Candle"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> weather<- read.csv("C:/Users/DELL/Desktop/minor project/weather_data_10yrs.csv")
+> smp_size <- floor(0.75*nrow(weather))
+> set.seed(500)
+> index <- sample(seq_len(nrow(weather)), size=smp_size)
+> wtrain <- weather[index, ]
+> wtest <- weather[-index, ]
+> m <- lm(X2016 ~ X2015+X2014+X2013+X2012+X2011+X2010+X2009+X2008+X2007, data=wtrain)
+> library(rpart)
+> m<-rpart(X2016 ~X2015+X2014+X2013+X2012+X2011+X2010+X2009+X2008+X2007, data=wtrain)
+> prpart<- predict(m, wtest)
+> m
+n= 273 
+
+node), split, n, deviance, yval
+      * denotes terminal node
+
+ 1) root 273 75242.14000 52.02125  
+   2) X2009< 54.5 146 21662.73000 40.20479  
+     4) X2010< 34.55 73  5302.34500 33.42192 *
+     5) X2010>=34.55 73  9643.29900 46.98767  
+      10) X2014< 28.65 9   950.17560 32.97778 *
+      11) X2014>=28.65 64  6678.21600 48.95781  
+        22) X2007< 47.45 40  3682.81900 45.35500 *
+        23) X2007>=47.45 24  1610.83600 54.96250  
+          46) X2013< 43.4 8   232.81500 46.72500 *
+          47) X2013>=43.4 16   563.74440 59.08125 *
+   3) X2009>=54.5 127  9758.04600 65.60551  
+     6) X2015< 61.55 42  3518.14300 57.75714  
+      12) X2008< 65 33  2275.36200 54.98485 *
+      13) X2008>=65 9    59.19556 67.92222 *
+     7) X2015>=61.55 85  2374.51700 69.48353 *
+> library(Metrics)
+> mse(wtest$X2016, prpart)
+[1] 75.59793
+> cor(wtest$X2016, prpart)
+[1] 0.8402072
+> summary(prpart)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  32.98   42.37   54.98   52.60   69.48   69.48 
+> summary(wtest$X2016)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  15.30   37.67   55.45   52.37   66.22   75.90 
+> 

@@ -1,0 +1,48 @@
+
+R version 3.4.1 (2017-06-30) -- "Single Candle"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> weather<- read.csv("C:/Users/DELL/Desktop/minor project/weather_data_10yrs.csv")
+> smp_size <- floor(0.60*nrow(weather))
+> set.seed(500)
+> index <- sample(seq_len(nrow(weather)), size=smp_size)
+> wtrain <- weather[index, ]
+> wtest <- weather[-index, ]
+> m <- lm(X2016 ~ X2015+X2014+X2013+X2012+X2011+X2010+X2009+X2008+X2007, data=wtrain)
+> plm <- predict(m, wtest)
+> library(Metrics)
+> mse(wtest$X2016, plm)
+[1] 70.03637
+> cor(wtest$X2016, plm)
+[1] 0.8551026
+> mae(plm, wtest$X2016)
+[1] 6.701901
+> save.image("C:\\Users\\DELL\\Desktop\\minor project\\implementaions\\lm\\lm_1.RData")
+> plot(wtest$X2016,plm,col='red',main='Real vs predicted values',pch=18,cex=0.7)
+> abline(0,1,lwd=2)
+> legend('bottomright',legend='NN',pch=18,col='red', bty='n')
+> plot(wtest$X2016,plm,col='red',main='Real vs predicted values',pch=18,cex=0.7)
+> abline(0,1,lwd=2)
+> legend('bottomright',legend='LR',pch=18,col='red', bty='n')
+> save.image("C:\\Users\\DELL\\Desktop\\minor project\\implementaions\\lm\\lm_1.RData")
+Warning messages:
+1: unable to open printer 
+2: opening device failed 
+> 

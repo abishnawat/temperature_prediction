@@ -1,0 +1,43 @@
+
+R version 3.4.1 (2017-06-30) -- "Single Candle"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> weather<- read.csv("C:/Users/DELL/Desktop/minor project/tmax_9yrs.csv")
+> smp_size <- floor(0.75*nrow(weather))
+> set.seed(500)
+> index <- sample(seq_len(nrow(weather)), size=smp_size)
+> normalize<-function(x){return((x-min(x))/(max(x)-min(x)))}
+> weather_norm<-as.data.frame(lapply(weather, normalize))
+> wtrain<-weather_norm[index, ]
+> wtest <- weather_norm[-index, ]
+> library(neuralnet)
+> m<-neuralnet(tmax~day+month+year, data=wtrain, hidden=c(20), linear.output=T, stepmax=2e+6)
+> pnn<-compute(m,wtest[,1:3])
+> pr<-pnn$net.result
+> cor(wtest$tmax, pr)
+             [,1]
+[1,] 0.8081078344
+> wtest.x<-((wtest$tmax)*(max(weather)-min(weather)))+min(weather)
+> pr.x<-(pr*(max(weather)-min(weather)))+min(weather)
+> library(Metrics)
+> mse(wtest.x, pr.x)
+[1] 58160.6438
+> save.image("C:\\Users\\DELL\\Desktop\\minor project\\implementaions\\bpnn\\data1_h1-20_r1.RData")
+> 

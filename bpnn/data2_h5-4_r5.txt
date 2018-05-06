@@ -1,0 +1,45 @@
+
+R version 3.4.1 (2017-06-30) -- "Single Candle"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> weather<- read.csv("C:/Users/DELL/Desktop/minor project/weather_data_10yrs.csv")
+> smp_size <- floor(0.75*nrow(weather))
+> set.seed(500)
+> index <- sample(seq_len(nrow(weather)), size=smp_size)
+> normalize<-function(x){return((x-min(x))/(max(x)-min(x)))}
+> weather_norm<-as.data.frame(lapply(weather, normalize))
+> wtrain<-weather_norm[index, ]
+> wtest <- weather_norm[-index, ]
+> library(neuralnet)
+> m<-neuralnet(X2016~X2015+X2014+X2013+X2012+X2011+X2010+X2009+X2008+X2007, data=wtrain, hidden=c(4,4,4,4,4),rep=5, linear.output=T, stepmax=2e+6)
+Warning message:
+algorithm did not converge in 1 of 5 repetition(s) within the stepmax 
+> pnn<-compute(m,wtest[,2:10])
+> pr<-pnn$net.result
+> cor(wtest$X2016, pr)
+             [,1]
+[1,] 0.8535524625
+> wtest.x<-((wtest$X2016)*(max(weather)-min(weather)))+min(weather)
+> pr.x<-(pr*(max(weather)-min(weather)))+min(weather)
+> library(Metrics)
+> mse(wtest.x, pr.x)
+[1] 99.34005262
+> save.image("C:\\Users\\DELL\\Desktop\\minor project\\implementaions\\bpnn\\data2_h5-4_r5.RData")
+> 
